@@ -1,0 +1,10 @@
+{
+  "realm": "master",
+  "url": "https://192.168.13.44:8443/auth",
+  "ssl-required": "external",
+  "clientId": "appsone-sso",
+  "credentials": {
+    "secret": "c47a9096-bc2e-4952-9947-d0206d505f1f"
+  },
+  "confidential-port": 0
+}

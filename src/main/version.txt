@@ -1,0 +1,2 @@
+Version : ${project.artifactId}-${project.version}
+Build Date : ${timestamp}

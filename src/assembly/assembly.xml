@@ -1,0 +1,73 @@
+<assembly>
+	<id>bin</id>
+
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+
+	<baseDirectory>${project.artifactId}</baseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>lib</outputDirectory>
+			<unpack>false</unpack>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<fileSet>
+			<directory>src/main/scripts</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>heal-ui-service.sh</include>
+			</includes>
+			<filtered>true</filtered>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+		</fileSet>
+		<fileSet>
+			<outputDirectory>public</outputDirectory>
+			<excludes>
+				<exclude>**/*</exclude>
+			</excludes>
+			<fileMode>0755</fileMode>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+
+
+		<fileSet>
+			<outputDirectory>logs</outputDirectory>
+			<excludes>
+				<exclude>**/*</exclude>
+			</excludes>
+			<fileMode>0755</fileMode>
+		</fileSet>
+
+		<fileSet>
+			<outputDirectory>config</outputDirectory>
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<lineEnding>unix</lineEnding>
+			<fileMode>0755</fileMode>
+		</fileSet>
+
+	</fileSets>
+
+	<files>
+		<file>
+			<source>src/main/version.txt</source>
+			<outputDirectory></outputDirectory>
+			<filtered>true</filtered>
+		</file>
+
+	</files>
+
+</assembly>

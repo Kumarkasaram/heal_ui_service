@@ -1,0 +1,13 @@
+{
+  "Access-Control-Allow-Methods":"GET,OPTIONS,DELETE,PUT",
+  "Access-Control-Allow-Credentials": "true",
+  "X-Content-Type-Options": "application/json",
+  "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin,",
+  "Access-Control-Allow-Origin": "https://keycloak.appnomic:8443",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Cache-Control": "no-cache, no-store, must-revalidate",
+  "Expires": "0",
+  "Pragma": "no-cache",
+  "Strict-Transport-Security": "max-age=31536000",
+  "Content-Security-Policy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+}
