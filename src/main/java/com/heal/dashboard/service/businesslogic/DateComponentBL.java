@@ -1,5 +1,10 @@
 package com.heal.dashboard.service.businesslogic;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.dao.mysql.FeaturesDao;
@@ -9,12 +14,8 @@ import com.heal.dashboard.service.exception.ServerException;
 import com.heal.dashboard.service.exception.UiServiceException;
 import com.heal.dashboard.service.util.CommonUtils;
 import com.heal.dashboard.service.util.Constants;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

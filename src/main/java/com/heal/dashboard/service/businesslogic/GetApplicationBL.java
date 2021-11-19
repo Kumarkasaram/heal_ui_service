@@ -53,7 +53,8 @@ public class GetApplicationBL implements BusinessLogic<String, UserAccessDetails
             throw new ClientException("identifier cant be null or empty");
         }
 
-        String userId = CommonUtils.extractUserIdFromJWT(jwtToken);
+        //String userId = CommonUtils.extractUserIdFromJWT(jwtToken);
+        String userId = jwtToken;
         if (null == userId || userId.trim().isEmpty()) {
             throw new ClientException("User details extraction failure");
         }
