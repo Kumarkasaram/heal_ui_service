@@ -38,8 +38,7 @@ public class ServiceDetailsBLTest {
 	    AccountDao acountDao;
 	    @Mock
 	    TopologyUtility topologyUtiliBL; 
-	    @Mock
-	    CommonServiceBL commonServiceBL;
+	 
 	    @Mock
 	    List<AccountBean> accountBeansList;
 	    @Mock
@@ -150,7 +149,6 @@ public class ServiceDetailsBLTest {
 				Mockito.when(userValidationUtil.getUserAccessDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(new UserAccessDetails());
 				Mockito.when(controllerDao.getAllServicesForAccount(Mockito.anyInt()))
 				.thenReturn(new ArrayList<>());
-		        Mockito.when(commonServiceBL.extractUserAccessDetails(Mockito.anyString(), Mockito.any())).thenReturn(userAccessDetails);
 		    	Mockito.when(topologyUtiliBL.getNodeList(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyLong()))
 				.thenReturn(nodeslist);
 		Mockito.when(topologyUtiliBL.getEdgeList(Mockito.anyInt(),Mockito.anyList())).thenReturn(edgeslist);
@@ -162,7 +160,6 @@ public class ServiceDetailsBLTest {
 	   	 UtilityBean<String> utilityBean = UtilityBean.<String>builder().pojoObject("7640123a-fbde-4fe5-9812-581cd1e3a9c1").build();
 	        Mockito.when(acountDao.fetchUserAccessDetailsUsingIdentifier(Mockito.anyString())).thenReturn(null);
 	        Mockito.when(acountDao.getAccountDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(accountBeansList);
-	        Mockito.when(commonServiceBL.extractUserAccessDetails(Mockito.anyString(), Mockito.any())).thenReturn(userAccessDetails);
 	    	Mockito.when(topologyUtiliBL.getNodeList(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyLong()))
 			.thenReturn(nodeslist);
 	    	Mockito.when(topologyUtiliBL.getEdgeList(Mockito.anyInt(),Mockito.anyList())).thenReturn(edgeslist);

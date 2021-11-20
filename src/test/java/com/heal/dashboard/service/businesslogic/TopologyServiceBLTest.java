@@ -39,8 +39,6 @@ public class TopologyServiceBLTest {
 	@Mock
 	TopologyUtility topologyUtiliBL;
 	@Mock
-	CommonServiceBL commonServiceBL;
-	@Mock
 	List<AccountBean> accountBeansList;
 	@Mock
 	UserAccessDetails userAccessDetails;
@@ -148,8 +146,6 @@ public class TopologyServiceBLTest {
 		Mockito.when(acountDao.fetchUserAccessDetailsUsingIdentifier(Mockito.anyString())).thenReturn(userAccessBean);
 		Mockito.when(acountDao.getAccountDetailsForIdentifier(Mockito.anyString()))
 				.thenReturn(accountBean);
-		Mockito.when(commonServiceBL.extractUserAccessDetails(Mockito.anyString(), Mockito.any()))
-				.thenReturn(userAccessDetails);
 		Mockito.when(userValidationUtil.getUserAccessDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(new UserAccessDetails());
 		Mockito.when(controllerDao.getAllServicesForAccount(Mockito.anyInt()))
 		.thenReturn(new ArrayList<>());
@@ -175,8 +171,7 @@ public class TopologyServiceBLTest {
 		Mockito.when(acountDao.fetchUserAccessDetailsUsingIdentifier(Mockito.anyString())).thenReturn(userAccessBean);
 		Mockito.when(acountDao.getAccountDetailsForIdentifier(Mockito.anyString()))
 				.thenReturn(accountBean);
-		Mockito.when(commonServiceBL.extractUserAccessDetails(Mockito.anyString(), Mockito.any()))
-				.thenReturn(userAccessDetails);
+
 		Mockito.when(userValidationUtil.getUserAccessDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(new UserAccessDetails());
 		Mockito.when(controllerDao.getAllServicesForAccount(Mockito.anyInt()))
 		.thenReturn(new ArrayList<>());
@@ -194,8 +189,6 @@ public class TopologyServiceBLTest {
 		Mockito.when(acountDao.fetchUserAccessDetailsUsingIdentifier(Mockito.anyString())).thenReturn(null);
 		Mockito.when(acountDao.getAccountDetails(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(accountBeansList);
-		Mockito.when(commonServiceBL.extractUserAccessDetails(Mockito.anyString(), Mockito.any()))
-				.thenReturn(userAccessDetails);
 		Mockito.when(topologyUtiliBL.getNodeList(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.anyLong()))
 		.thenReturn(nodeslist);
 Mockito.when(topologyUtiliBL.getEdgeList(Mockito.anyInt(),Mockito.anyList())).thenReturn(edgeslist);
