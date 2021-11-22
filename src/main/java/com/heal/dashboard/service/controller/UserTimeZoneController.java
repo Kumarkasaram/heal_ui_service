@@ -5,6 +5,7 @@ package com.heal.dashboard.service.controller;
 import com.heal.dashboard.service.beans.UserTimezonePojo;
 import com.heal.dashboard.service.beans.UserTimezoneRequestData;
 import com.heal.dashboard.service.beans.UtilityBean;
+import com.heal.dashboard.service.businesslogic.GetUserTimezoneBL;
 import com.heal.dashboard.service.businesslogic.UserTimezoneBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
@@ -25,6 +26,8 @@ public class UserTimeZoneController {
 	@Autowired
 	UserTimezoneBL userTimezoneBL;
 	@Autowired
+	GetUserTimezoneBL getUserTimezoneBL;
+	@Autowired
 	JsonFileParser headersParser;
 
 	@ApiOperation(value = "ADD/Update user tagging Detail", response = String.class)
@@ -39,6 +42,21 @@ public class UserTimeZoneController {
 		UtilityBean<UserTimezoneRequestData> utilityBean = userTimezoneBL.clientValidation(tzResponse, authorizationToken, userName);
 		UserTimezoneRequestData userTimezoneRequestData = userTimezoneBL.serverValidation(utilityBean);
 		String response = userTimezoneBL.process(userTimezoneRequestData);
+
+		return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
+	}
+	
+	@ApiOperation(value = "fetch user tagging Detail", response = String.class)
+	 @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully fetch data"),
+	            @ApiResponse(code = 500, message = "Internal Server Error"),
+	            @ApiResponse(code = 400, message = "Invalid Request")})
+	@GetMapping(value = "/users/{username}/timezones")
+	public ResponseEntity<UserTimezonePojo> getUserPreferedZone(@PathVariable(name = "username") String userName,
+			@RequestHeader(value = "Authorization") String authorizationToken) throws ClientException, ServerException, DataProcessingException {
+
+		UtilityBean<String> utilityBean = getUserTimezoneBL.clientValidation(null, authorizationToken, userName);
+		UserTimezoneRequestData userTimezoneRequestData = getUserTimezoneBL.serverValidation(utilityBean);
+		UserTimezonePojo response = getUserTimezoneBL.process(userTimezoneRequestData);
 
 		return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
 	}

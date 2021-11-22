@@ -68,6 +68,19 @@ public class TimezoneDao {
 		}
 	}
 
+	public TimezoneDetail getTimezoneByUser(String objectRefTable, int objectId, int tagId) {
+		try {
+			String query = "select mtz.id, mtz.time_zone_id timeZoneName, mtz.timeoffset timeOffset, mtz.created_time createdTime, mtz.updated_time updatedTime, mtz.user_details_id userDetailsId, mtz.account_id accountId, mtz.offset_name offsetName, mtz.abbreviation abbreviation " +
+		            "from mst_timezone mtz, tag_mapping tm where mtz.id=tm.tag_key and tm.object_ref_table=? and tm.object_id=? and tm.tag_id=? and mtz.status=1";
+			return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(TimezoneDetail.class), objectRefTable, objectId, tagId);
+		} catch (Exception e) {
+			log.error("Invalid input parameter/s provided. Details: objectRefTable [{}], objectId [{}] and tagId [{}]. Details: ", objectRefTable, objectId, tagId, e);
+			return null;
+		}
+	}
+
+
+
 	public TagDetails getTagDetails(String name, int accountId) {
 		try {
 			String query = "select id,name,tag_type_id tagTypeId,is_predefined isPredefined,ref_table refTable,created_time createdTime,updated_time updatedTime,"
