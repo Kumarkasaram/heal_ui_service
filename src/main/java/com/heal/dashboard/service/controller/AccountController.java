@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.heal.dashboard.service.beans.AccountBean;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
+import com.heal.dashboard.service.beans.TagMapping;
 import com.heal.dashboard.service.beans.TopologyDetails;
 import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
@@ -24,6 +25,7 @@ import com.heal.dashboard.service.businesslogic.DateComponentBL;
 import com.heal.dashboard.service.businesslogic.GetAccountsBL;
 import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
 import com.heal.dashboard.service.businesslogic.TopologyServiceBL;
+import com.heal.dashboard.service.businesslogic.UserPreferencesBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
 import com.heal.dashboard.service.exception.ServerException;
@@ -45,6 +47,8 @@ public class AccountController {
     JsonFileParser headersParser;
     @Autowired
     GetAccountsBL getAccountsBL;
+    @Autowired
+    UserPreferencesBL userPreferencesBL;;
     @Autowired
     TopologyServiceBL topologyServiceBL;
     @Autowired
@@ -107,6 +111,19 @@ public class AccountController {
             throws ClientException, DataProcessingException {
         dateComponentBL.clientValidation(null, authorizationToken);
         List<DateComponentBean> response = dateComponentBL.process(null);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
+    }
+    
+    @ApiOperation(value = "Retrieve user-preferences list", response = AccountBean.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/account/{identifier}/user-preferences", method = RequestMethod.GET)
+    public ResponseEntity<List<TagMapping>> getPreferenceList(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier)
+            throws ClientException, DataProcessingException, ServerException {
+    	UtilityBean<String> utilityBean = userPreferencesBL.clientValidation(null, authorizationToken,identifier);
+    	TagMapping tagMapping = userPreferencesBL.serverValidation(utilityBean);
+        List<TagMapping> response = userPreferencesBL.process(tagMapping);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
     }
 }

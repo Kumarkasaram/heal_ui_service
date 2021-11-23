@@ -40,8 +40,9 @@ public class TagsDao {
             return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(TagDetails.class), name, accountId);
         } catch (Exception e) {
             log.error("Error while fetching tag_details information for tag name [{}] and accountId [{}]. Details: ", name, accountId, e);
+            return null;
+
         }
-        return null;
     }
 
     public List<TagMapping> getTagMappingDetailsByTagKey(String tagKey, String objectRefTable, int accountId) {
