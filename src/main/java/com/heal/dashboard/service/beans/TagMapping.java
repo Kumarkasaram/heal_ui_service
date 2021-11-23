@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class TagMapping extends BaseEntity {
 
     private int tagId;

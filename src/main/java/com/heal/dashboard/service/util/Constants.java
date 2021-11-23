@@ -7,6 +7,8 @@ public class Constants {
     public static final String ACCOUNT_TABLE_NAME_MYSQL_DEFAULT = "account";
     public static final String MESSAGE_INVALID_PARAMETERS = "Invalid input parameter/s provided.";
     public static final String ERROR_INVALID_INPUT_PARAM = "Invalid input parameters provided. Param name:{0}, value:{1}";
+    public static final String USER_NOT_EXISTS = "User doesn't exists in HEAL. Identifier: {0}";
+    public static final String USER_PREFERENCES_TAG_NAME = "UserPreference";
 
     public static final int DEFAULT_ACCOUNT_ID = 1;
     public static final String USER_ATTRIBUTES_TABLE_NAME_MYSQL = "user_attributes";
