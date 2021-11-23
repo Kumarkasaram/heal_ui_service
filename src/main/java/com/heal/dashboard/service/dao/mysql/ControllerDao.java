@@ -33,6 +33,16 @@ public class ControllerDao {
             throw new ServerException("Error in ControllerDao.getControllerList while fetching controller information for accountId : " + accountId);
         }
     }
+    
+    public Controller getControllerListByAccountIdAndApplicationId(int accountId,int applicationId) throws ServerException {
+        try {
+            String query = "select id as appId ,name,controller_type_id ,identifier, monitor_enabled  as monitoringEnabled,account_id , status from controller where account_id = ? and id =?";
+            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Controller.class), accountId,applicationId);
+        } catch (DataAccessException e) {
+            log.error("Error while fetching controller information", e);
+            throw new ServerException("Error in ControllerDao.getControllerList while fetching controller information for accountId : " + accountId);
+        }
+    }
 
     public List<Controller> getApplicationsForAccount(int accountId) {
         try {

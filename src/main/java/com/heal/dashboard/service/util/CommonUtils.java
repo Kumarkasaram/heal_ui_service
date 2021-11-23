@@ -2,23 +2,15 @@ package com.heal.dashboard.service.util;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
-import com.appnomic.appsone.model.JWTData;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.heal.dashboard.service.beans.AgentBean;
-import com.heal.dashboard.service.beans.ControllerBean;
-import com.heal.dashboard.service.beans.TagMapping;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +31,14 @@ public class CommonUtils {
 		return jwtData.getSub();
 	}
 
+//	
+//	public static String extractUserIdFromJWT(String jwtToken) {
+//	
+//
+//		return jwtToken;
+//	}
+
+	
 	public static ObjectMapper getObjectMapperWithHtmlEncoder() {
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,6 +48,9 @@ public class CommonUtils {
 
 		return objectMapper;
 	}
+	 public static int[] getAggregationLevels() {
+	        return Arrays.stream(Constants.ROLLUP_LEVELS_DEFAULT.split(",")).mapToInt(it -> Integer.parseInt(it.trim())).toArray();
+	    }
 }
 
 class EscapeHTML extends JsonDeserializer<String> {

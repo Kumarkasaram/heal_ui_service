@@ -2,6 +2,7 @@ package com.heal.dashboard.service.controller;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.heal.dashboard.service.beans.AccountBean;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
+import com.heal.dashboard.service.beans.TFPRequestData;
 import com.heal.dashboard.service.beans.TagMapping;
 import com.heal.dashboard.service.beans.TopologyDetails;
 import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
 import com.heal.dashboard.service.beans.UtilityBean;
+import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
 import com.heal.dashboard.service.businesslogic.DateComponentBL;
 import com.heal.dashboard.service.businesslogic.GetAccountsBL;
 import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
 import com.heal.dashboard.service.businesslogic.TopologyServiceBL;
+import com.heal.dashboard.service.businesslogic.TransactionFlowPathInboundBL;
 import com.heal.dashboard.service.businesslogic.UserPreferencesBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
@@ -55,6 +59,8 @@ public class AccountController {
     DateComponentBL dateComponentBL;
     @Autowired
     MasterFeaturesBL masterFeaturesBL;
+    @Autowired
+    TransactionFlowPathInboundBL transactionFlowPathInboundBL;
 
     @ApiOperation(value = "Retrieve accounts list", response = AccountBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
@@ -125,5 +131,21 @@ public class AccountController {
     	TagMapping tagMapping = userPreferencesBL.serverValidation(utilityBean);
         List<TagMapping> response = userPreferencesBL.process(tagMapping);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
+    }
+    
+    @ApiOperation(value = "Retrieve Inbounds list", response = AccountBean.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/:identifier/applications/:applicationId/outbounds", method = RequestMethod.GET)
+    public ResponseEntity<List<TFPServiceDetails>> getOutbounds(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    		@PathVariable("applicationId") String applicationId,
+    		@RequestParam(value ="toTime",required =true) String toTime,
+    		@RequestParam(value = "fromTime",required =true) String fromTime)
+            throws ClientException, DataProcessingException, ServerException {
+    	  UtilityBean<Map> utilityBean = transactionFlowPathInboundBL.clientValidation(null, authorizationToken, identifier, applicationId,fromTime,toTime);
+          TFPRequestData topologyValidationResponseBean = transactionFlowPathInboundBL.serverValidation(utilityBean);
+          List<TFPServiceDetails> topologyDetails = transactionFlowPathInboundBL.process(topologyValidationResponseBean);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(topologyDetails);
     }
 }
