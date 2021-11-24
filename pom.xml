@@ -69,11 +69,11 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.appnomic.appsone.keycloak</groupId>
 			<artifactId>keycloak-session-validator</artifactId>
 			<version>5.8.13</version>
-		</dependency>
+		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-cassandra -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -152,6 +152,13 @@
 			<artifactId>commons-collections4</artifactId>
 			<version>4.4</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<version>7.15.2</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

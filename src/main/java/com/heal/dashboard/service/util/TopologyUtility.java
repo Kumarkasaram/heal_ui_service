@@ -1,22 +1,35 @@
 package com.heal.dashboard.service.util;
 
-import com.heal.dashboard.service.beans.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.heal.dashboard.service.beans.AccountBean;
+import com.heal.dashboard.service.beans.AgentBean;
+import com.heal.dashboard.service.beans.ConnectionDetails;
+import com.heal.dashboard.service.beans.ControllerBean;
+import com.heal.dashboard.service.beans.Edges;
+import com.heal.dashboard.service.beans.Nodes;
+import com.heal.dashboard.service.beans.TagDetails;
+import com.heal.dashboard.service.beans.TagMapping;
+import com.heal.dashboard.service.beans.UserAccessDetails;
+import com.heal.dashboard.service.beans.ViewTypeBean;
 import com.heal.dashboard.service.businesslogic.MaintainanceWindowsBL;
 import com.heal.dashboard.service.dao.mysql.AgentDao;
 import com.heal.dashboard.service.dao.mysql.ControllerDao;
 import com.heal.dashboard.service.dao.mysql.MasterDataDao;
 import com.heal.dashboard.service.dao.mysql.TagsDao;
 import com.heal.dashboard.service.enums.ComponentType;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.heal.dashboard.service.exception.ServerException;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -32,6 +45,7 @@ public class TopologyUtility {
 	TagsDao tagsDao;
 	@Autowired
 	MaintainanceWindowsBL maintainanceWindowsBL;
+
 	
 	public List<Nodes> getNodeList(AccountBean account, UserAccessDetails userAccessDetails, List<ControllerBean> serviceList, long toTime) {
 		try {
@@ -185,6 +199,57 @@ public class TopologyUtility {
 		return false;
 	}
 
+	public  List<Integer> getJIMEnabledServiceIdForAccount(int accountId) throws ServerException {
+        // get the controller tag detail from tag_details for an account
+        TagDetails ctrlTagDetail = tagsDao.getTagDetails(Constants.CONTROLLER_TAG,Constants.DEFAULT_ACCOUNT_ID);
+        if (ctrlTagDetail == null) {
+            log.error("Tag {} does not exist in database.", Constants.CONTROLLER_TAG);
+            return new ArrayList<>();
+        }
+        List<TagMapping> tagMappingDetailsList = tagsDao.getTagMappingDetailsByAccountId(accountId);
+        ViewTypeBean jimAgentType =null;
+        Optional<ViewTypeBean> subTypeOptional = masterDataDao.getAllViewTypes()       
+                .stream()
+                .filter(it -> (Constants.AGENT_TYPE.trim().equalsIgnoreCase(it.getTypeName())))
+                .filter(it -> (Constants.JIM_AGENT_TYPE.trim().equalsIgnoreCase(it.getSubTypeName())))
+                .findAny();
+
+        if(subTypeOptional.isPresent())
+        	jimAgentType = subTypeOptional.get();
+       
+        List<AgentBean> agentBeans = agentDao.getAgentList();
+
+        List<String> serviceIdList = getJIMEnabledServiceIdsForAccount(agentBeans, tagMappingDetailsList,
+                jimAgentType.getSubTypeId(), ctrlTagDetail.getId());
+
+        log.debug("There are {} JIM enabled services in account id: {}.", serviceIdList.size(), accountId);
+        return serviceIdList.stream().map(Integer::parseInt).collect(Collectors.toList());
+    }
+
+	public  List<String> getJIMEnabledServiceIdsForAccount(List<AgentBean> agentList,
+			List<TagMapping> tagList, int jimAgentSubTypeId, int controllerTagDetailId) {
+		if (!agentList.isEmpty() && !tagList.isEmpty()) {
+			Set<Integer> jimAgentIds = agentList.stream().filter(agent -> agent.getAgentTypeId() == jimAgentSubTypeId)
+					.map(AgentBean::getId).collect(Collectors.toSet());
+
+			List<TagMapping> serviceCtrlMappings = tagList.stream()
+					.filter(tag -> tag.getTagId() == controllerTagDetailId
+							&& Constants.AGENT_TABLE.equalsIgnoreCase(tag.getObjectRefTable())
+							&& jimAgentIds.contains(tag.getObjectId()))
+					.collect(Collectors.toList());
+
+			if (serviceCtrlMappings.size() > 0) {
+				List<String> serviceIds = serviceCtrlMappings.stream().map(TagMapping::getTagKey)
+						.collect(Collectors.toList());
+				log.debug("JIM is enable on {} services. services: {}", serviceIds.size(), serviceIds);
+				return serviceIds;
+			}
+		}
+		log.debug("agent list or tag list is empty, hence checking action [JIM enabled] has failed.");
+		return new ArrayList<>();
+
+	}
+	
 	public List<TagMapping> getServiceTags(int serviceId, int accountId) {
 		long st = System.currentTimeMillis();
 
