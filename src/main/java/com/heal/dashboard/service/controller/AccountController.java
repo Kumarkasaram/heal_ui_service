@@ -29,6 +29,7 @@ import com.heal.dashboard.service.businesslogic.GetAccountsBL;
 import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
 import com.heal.dashboard.service.businesslogic.TopologyServiceBL;
 import com.heal.dashboard.service.businesslogic.TransactionFlowPathInboundBL;
+import com.heal.dashboard.service.businesslogic.TransactionFlowPathOutboundBL;
 import com.heal.dashboard.service.businesslogic.UserPreferencesBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
@@ -61,6 +62,9 @@ public class AccountController {
     MasterFeaturesBL masterFeaturesBL;
     @Autowired
     TransactionFlowPathInboundBL transactionFlowPathInboundBL;
+    
+    @Autowired
+    TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
 
     @ApiOperation(value = "Retrieve accounts list", response = AccountBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
@@ -96,7 +100,7 @@ public class AccountController {
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(responseBean);
     }
 
-    @ApiOperation(value = "Retrieve features List", response = AccountBean.class)
+    @ApiOperation(value = "Retrieve features List", response = MasterFeaturesBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
             @ApiResponse(code = 400, message = "Invalid Request")})
@@ -108,7 +112,7 @@ public class AccountController {
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
     }
 
-    @ApiOperation(value = "Retrieve date components List", response = AccountBean.class)
+    @ApiOperation(value = "Retrieve date components List", response = DateComponentBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
             @ApiResponse(code = 400, message = "Invalid Request")})
@@ -133,19 +137,36 @@ public class AccountController {
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(response);
     }
     
-    @ApiOperation(value = "Retrieve Inbounds list", response = AccountBean.class)
+    @ApiOperation(value = "Retrieve Inbounds list", response = TFPServiceDetails.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
             @ApiResponse(code = 400, message = "Invalid Request")})
-    @RequestMapping(value = "/accounts/:identifier/applications/:applicationId/outbounds", method = RequestMethod.GET)
-    public ResponseEntity<List<TFPServiceDetails>> getOutbounds(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    @RequestMapping(value = "/accounts/{identifier}/applications/{applicationId}/inbounds", method = RequestMethod.GET)
+    public ResponseEntity<List<TFPServiceDetails>> getInbounds(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
     		@PathVariable("applicationId") String applicationId,
     		@RequestParam(value ="toTime",required =true) String toTime,
     		@RequestParam(value = "fromTime",required =true) String fromTime)
             throws ClientException, DataProcessingException, ServerException {
     	  UtilityBean<Map> utilityBean = transactionFlowPathInboundBL.clientValidation(null, authorizationToken, identifier, applicationId,fromTime,toTime);
-          TFPRequestData topologyValidationResponseBean = transactionFlowPathInboundBL.serverValidation(utilityBean);
-          List<TFPServiceDetails> topologyDetails = transactionFlowPathInboundBL.process(topologyValidationResponseBean);
-        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(topologyDetails);
+          TFPRequestData tFPRequestData = transactionFlowPathInboundBL.serverValidation(utilityBean);
+          List<TFPServiceDetails> tFPServiceDetailList = transactionFlowPathInboundBL.process(tFPRequestData);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(tFPServiceDetailList);
     }
+    
+    @ApiOperation(value = "Retrieve outbounds list", response = TFPServiceDetails.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/applications/{applicationId}/outbounds", method = RequestMethod.GET)
+    public ResponseEntity<List<TFPServiceDetails>> getoutBounds(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    		@PathVariable("applicationId") String applicationId,
+    		@RequestParam(value ="toTime",required =true) String toTime,
+    		@RequestParam(value = "fromTime",required =true) String fromTime)
+            throws ClientException, DataProcessingException, ServerException {
+    	  UtilityBean<Map> utilityBean = transactionFlowPathOutboundBL.clientValidation(null, authorizationToken, identifier, applicationId,fromTime,toTime);
+          TFPRequestData tFPRequestData = transactionFlowPathOutboundBL.serverValidation(utilityBean);
+          List<TFPServiceDetails> tFPServiceDetailList = transactionFlowPathOutboundBL.process(tFPRequestData);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(tFPServiceDetailList);
+    }
+    
 }

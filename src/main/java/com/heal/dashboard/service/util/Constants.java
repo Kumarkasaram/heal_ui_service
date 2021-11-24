@@ -32,6 +32,10 @@ public class Constants {
     public static final String AGENT_TYPE = "Agent";
     public static final String JIM_AGENT_TYPE = "JIMAgent";
     public static final String KUBERNETES = "Kubernetes";
+    
+    public static final String CONTROLLER_TYPE_NAME_DEFAULT = "ControllerType";
+    public static final String APPLICATION_CONTROLLER_TYPE = "Application";
+
 
     public static final int SEVERITY_295 = 295;
     public static final int SEVERITY_296 = 296;

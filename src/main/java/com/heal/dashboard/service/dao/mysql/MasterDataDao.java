@@ -2,6 +2,7 @@ package com.heal.dashboard.service.dao.mysql;
 
 
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ public class MasterDataDao {
 			String query = "select id,source_id ,source_ref_object ,destination_id ,destination_ref_object,account_id ,user_details_id  from connection_details where account_id = ?";
 			return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(ConnectionDetails.class), accountId);
 		} catch (DataAccessException e) {
-			log.error("Error while fetching tag_details information", e);
-			throw new ServerException("Error in getConnectionDetails() method  while fetching connection_details information for accountId : " + accountId);
+			log.error("Error in MasterDataDao class   while fetching getConnectionDetails information", e);
 		}
+		return Collections.emptyList();
 	}
 
 	public List<ViewTypeBean> getAllViewTypes() throws ServerException {
