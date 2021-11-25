@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -59,7 +60,7 @@ public class ElasticSearchConnectionManager {
 	    private static final String ELASTICSEARCH_PROTOCOL = protocall;
 	    private static RestHighLevelClient elasticClient = null;
 
-	    private ElasticSearchConnectionManager()    {
+	    public ElasticSearchConnectionManager()    {
 	    }
 
 	    private static ElasticSearchConnectionManager _this;

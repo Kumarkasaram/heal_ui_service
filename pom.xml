@@ -153,11 +153,20 @@
 			<version>4.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
 		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>7.15.2</version>
+		    <groupId>org.springframework.data</groupId>
+		    <artifactId>spring-data-elasticsearch</artifactId>
+		    <version>4.3.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.codahale.metrics/metrics-core -->
+		<dependency>
+		    <groupId>com.codahale.metrics</groupId>
+		    <artifactId>metrics-core</artifactId>
+		    <version>3.0.2</version>
+		</dependency>
+		
 		
 	</dependencies>
 
