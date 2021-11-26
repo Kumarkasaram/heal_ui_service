@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heal.dashboard.service.beans.AccountBean;
+import com.heal.dashboard.service.beans.ApplicationSDMBean;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
 import com.heal.dashboard.service.beans.TFPRequestData;
@@ -24,6 +25,7 @@ import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
 import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
+import com.heal.dashboard.service.businesslogic.ApplicationSDMBL;
 import com.heal.dashboard.service.businesslogic.DateComponentBL;
 import com.heal.dashboard.service.businesslogic.GetAccountsBL;
 import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
@@ -62,9 +64,10 @@ public class AccountController {
     MasterFeaturesBL masterFeaturesBL;
     @Autowired
     TransactionFlowPathInboundBL transactionFlowPathInboundBL;
-    
     @Autowired
     TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
+    @Autowired
+	ApplicationSDMBL ApplicationSDMBL;
 
     @ApiOperation(value = "Retrieve accounts list", response = AccountBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
@@ -167,6 +170,23 @@ public class AccountController {
           TFPRequestData tFPRequestData = transactionFlowPathOutboundBL.serverValidation(utilityBean);
           List<TFPServiceDetails> tFPServiceDetailList = transactionFlowPathOutboundBL.process(tFPRequestData);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(tFPServiceDetailList);
+    }
+    
+    
+    @ApiOperation(value = "Retrieve topology list", response = TFPServiceDetails.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/applications/{applicationId}/outbounds", method = RequestMethod.GET)
+    public ResponseEntity<TopologyDetails> getApplicationTopology(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    		@PathVariable("applicationId") String applicationId,
+    		@RequestParam(value ="toTime",required =true) String toTime,
+    		@RequestParam(value = "fromTime",required =true) String fromTime)
+            throws ClientException, DataProcessingException, ServerException {
+    	  UtilityBean<String> utilityBean = ApplicationSDMBL.clientValidation(null, authorizationToken, identifier, applicationId,fromTime,toTime);
+          ApplicationSDMBean applicationSDMBean = ApplicationSDMBL.serverValidation(utilityBean);
+          TopologyDetails topologyDetails = ApplicationSDMBL.process(applicationSDMBean);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(topologyDetails);
     }
     
 }

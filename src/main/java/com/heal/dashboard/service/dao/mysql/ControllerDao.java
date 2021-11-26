@@ -111,8 +111,9 @@ public class ControllerDao {
             return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Controller.class), accountId);
         } catch (DataAccessException e) {
             log.error("Error while fetching ApplicationList information", e);
-            throw new ServerException("Error in ControllerDao.getApplicationList while fetching ApplicationList information for accountId : " + accountId);
+           // throw new ServerException("Error in ControllerDao.getApplicationList while fetching ApplicationList information for accountId : " + accountId);
         }
+        return Collections.emptyList();
     }
 
     public List<ControllerBean> getApplicationsBySvcId(int serviceId, int accountId) throws ServerException {

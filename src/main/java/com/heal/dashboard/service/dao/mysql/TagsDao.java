@@ -32,6 +32,17 @@ public class TagsDao {
 
         return Collections.emptyList();
     }
+    
+    public List<TagMapping> getTagMappingDetailsWithoutObjectId(int tagId, String objectRefTable, int accountId) {
+        try {
+            String query = "select id, tag_id , object_id , object_ref_table , tag_key , tag_value from tag_mapping where tag_id = ? and object_ref_table = ? and account_id = ?";
+            return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(TagMapping.class), tagId, objectRefTable, accountId);
+        } catch (Exception e) {
+            log.error("Error while fetching tag_mapping information. Details: ", e);
+        }
+
+        return Collections.emptyList();
+    }
 
     public TagDetails getTagDetails(String name, int accountId) {
         try {
@@ -81,4 +92,19 @@ public class TagsDao {
         }
         return Collections.emptyList();
     }
+    
+    public int getTxnCountPerService(int serviceId,int accountId) throws UiServiceException {
+        try {
+            String query = "select count(*) from view_transaction_service where serviceId = ? and account_id = ?";
+            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Integer.class), serviceId,accountId);
+        } catch (DataAccessException e) {
+            log.info("DashboardUId information unavailable for applications [{}]", serviceId);
+        } catch (Exception e) {
+            log.error("Error while fetching tag mapping information for applicationIdentifiers [{}]. Details: ", serviceId, e);
+            throw new UiServiceException("Error while fetching tag mapping information needed for DashboardUId");
+        }
+        return 0;
+    }
+    
+    
 }
