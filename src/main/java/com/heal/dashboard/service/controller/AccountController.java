@@ -176,7 +176,7 @@ public class AccountController {
     public ResponseEntity<Set<ApplicationDetails>> getServiceApplications(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
                                                                 @PathVariable("serviceId") String serviceId)
             throws ClientException, DataProcessingException, ServerException {
-        UtilityBean<String> utilityBean = serviceApplicationBL.clientValidation(null, authorizationToken, identifier, applicationId);
+        UtilityBean<String> utilityBean = serviceApplicationBL.clientValidation(null, authorizationToken, identifier, serviceId);
         utilityBean = serviceApplicationBL.serverValidation(utilityBean);
         Set<ApplicationDetails> applicationList = serviceApplicationBL.process(utilityBean);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(applicationList);
