@@ -5,6 +5,7 @@ package com.heal.dashboard.service.dao.mysql;
 import java.util.Collections;
 import java.util.List;
 
+import com.heal.dashboard.service.beans.FileSummaryDetailsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -62,6 +63,16 @@ public class MasterDataDao {
 			return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(ViewTypeBean.class));
 		} catch (Exception e) {
 			log.warn("ViewTypes Unavailable for typeName [{}] and subTypeName [{}]", typeName, subTypeName);
+			return null;
+		}
+	}
+	public List<FileSummaryDetailsBean> getFileSummaryDetailsByAccount(int  accountId) {
+		String query = "select file_processed_id fileProcessedId, `key`, `value`,account_id accountId, is_debug_logs isDebugLogs from file_summary_details where account_id = ?";
+
+		try {
+			return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(FileSummaryDetailsBean.class),accountId);
+		} catch (Exception e) {
+			log.warn("file_processed_id  Unavailable for accountId [{}]", accountId);
 			return null;
 		}
 	}
