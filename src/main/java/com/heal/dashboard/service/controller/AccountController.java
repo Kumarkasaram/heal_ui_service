@@ -1,9 +1,13 @@
+
 package com.heal.dashboard.service.controller;
 
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.heal.dashboard.service.businesslogic.*;
+import com.heal.dashboard.service.pojo.ApplicationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heal.dashboard.service.beans.AccountBean;
-import com.heal.dashboard.service.beans.ApplicationSDMRequestBean;
-import com.heal.dashboard.service.beans.CategoryEvents;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
 import com.heal.dashboard.service.beans.TFPRequestData;
@@ -26,14 +28,6 @@ import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
 import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
-import com.heal.dashboard.service.businesslogic.ApplicationSDMCategoryEventServiceBL;
-import com.heal.dashboard.service.businesslogic.DateComponentBL;
-import com.heal.dashboard.service.businesslogic.GetAccountsBL;
-import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
-import com.heal.dashboard.service.businesslogic.TopologyServiceBL;
-import com.heal.dashboard.service.businesslogic.TransactionFlowPathInboundBL;
-import com.heal.dashboard.service.businesslogic.TransactionFlowPathOutboundBL;
-import com.heal.dashboard.service.businesslogic.UserPreferencesBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
 import com.heal.dashboard.service.exception.ServerException;
@@ -68,9 +62,9 @@ public class AccountController {
     
     @Autowired
     TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
-    
+
     @Autowired
-    private ApplicationSDMCategoryEventServiceBL applicationSDMCategoryEventServiceBL;
+    ServiceApplicationBL serviceApplicationBL;
 
     @ApiOperation(value = "Retrieve accounts list", response = AccountBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
@@ -174,7 +168,21 @@ public class AccountController {
           List<TFPServiceDetails> tFPServiceDetailList = transactionFlowPathOutboundBL.process(tFPRequestData);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(tFPServiceDetailList);
     }
-    
+
+    @ApiOperation(value = "Retrieve application list", response = ApplicationDetails.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/services/{serviceId}/applications", method = RequestMethod.GET)
+    public ResponseEntity<Set<ApplicationDetails>> getServiceApplications(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+                                                                @PathVariable("serviceId") String serviceId)
+            throws ClientException, DataProcessingException, ServerException {
+        UtilityBean<String> utilityBean = serviceApplicationBL.clientValidation(null, authorizationToken, identifier, serviceId);
+        utilityBean = serviceApplicationBL.serverValidation(utilityBean);
+        Set<ApplicationDetails> applicationList = serviceApplicationBL.process(utilityBean);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(applicationList);
+    }
+  
     @ApiOperation(value = "Retrieve Category event list", response = CategoryEvents.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
             @ApiResponse(code = 500, message = "Internal Server Error"),
@@ -192,5 +200,5 @@ public class AccountController {
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(categoryEventsList);
     }
     
-    
 }
+

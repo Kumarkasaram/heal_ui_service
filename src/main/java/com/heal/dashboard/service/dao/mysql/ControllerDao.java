@@ -3,7 +3,9 @@ package com.heal.dashboard.service.dao.mysql;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import com.heal.dashboard.service.exception.DataProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -40,8 +42,9 @@ public class ControllerDao {
             return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Controller.class), accountId,applicationId);
         } catch (DataAccessException e) {
             log.error("Error while fetching controller information", e);
-            throw new ServerException("Error in ControllerDao.getControllerList while fetching controller information for accountId : " + accountId);
+            //throw new ServerException("Error in ControllerDao.getControllerList while fetching controller information for accountId : " + accountId);
         }
+        return null;
     }
 
     public List<Controller> getApplicationsForAccount(int accountId) {
@@ -122,6 +125,16 @@ public class ControllerDao {
         } catch (DataAccessException e) {
             log.error("Error while fetching controller information", e);
             throw new ServerException("Error while fetching view_application_service_mapping information for accountId : " + accountId);
+        }
+    }
+
+    public List<ControllerBean> getApplicationsByServiceId(int serviceId) throws  DataProcessingException {
+        try {
+            String query = "select application_id as id , application_name as name, application_identifier as identifier , 1 as status ,account_id as accountId, 191 as controllerTypeId from view_application_service_mapping where service_id = ?";
+            return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(ControllerBean.class), serviceId);
+        } catch (DataAccessException e) {
+            log.error("Error while fetching controller information", e);
+            throw new DataProcessingException("Error while fetching view_application_service_mapping information for serviceId : " + serviceId);
         }
     }
 }

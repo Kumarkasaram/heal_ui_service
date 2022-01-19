@@ -5,6 +5,7 @@ public class Constants {
 
     public static final String AUTHORIZATION_TOKEN_IS_NULL_OR_EMPTY = "Authorization token is NULL or empty";
     public static final String ACCOUNT_TABLE_NAME_MYSQL_DEFAULT = "account";
+    public static final String MESSAGE_INVALID_SERVICE = "Invalid service id provided";
     public static final String MESSAGE_INVALID_PARAMETERS = "Invalid input parameter/s provided.";
     public static final String ERROR_INVALID_INPUT_PARAM = "Invalid input parameters provided. Param name:{0}, value:{1}";
     public static final String USER_NOT_EXISTS = "User doesn't exists in HEAL. Identifier: {0}";
@@ -13,6 +14,7 @@ public class Constants {
     public static final String REQUEST_PARAM_TO_TIME = "toTime";
     public static final String ROLLUP_LEVELS_DEFAULT = "1440,60,30,15,1";
     public static final int DEFAULT_ACCOUNT_ID = 1;
+    public static final String DASHBOARD_UID_TAG = "DashboardUId";
     public static final String USER_ATTRIBUTES_TABLE_NAME_MYSQL = "user_attributes";
 
     public static final String PROBLEM_LITERAL = "problem";
