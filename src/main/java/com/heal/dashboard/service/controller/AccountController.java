@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heal.dashboard.service.beans.AccountBean;
+import com.heal.dashboard.service.beans.ApplicationSDMRequestBean;
+import com.heal.dashboard.service.beans.CategoryEvents;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
 import com.heal.dashboard.service.beans.TFPRequestData;
@@ -24,6 +26,7 @@ import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
 import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
+import com.heal.dashboard.service.businesslogic.ApplicationSDMCategoryEventServiceBL;
 import com.heal.dashboard.service.businesslogic.DateComponentBL;
 import com.heal.dashboard.service.businesslogic.GetAccountsBL;
 import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
@@ -65,6 +68,9 @@ public class AccountController {
     
     @Autowired
     TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
+    
+    @Autowired
+    private ApplicationSDMCategoryEventServiceBL applicationSDMCategoryEventServiceBL;
 
     @ApiOperation(value = "Retrieve accounts list", response = AccountBean.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
@@ -168,5 +174,23 @@ public class AccountController {
           List<TFPServiceDetails> tFPServiceDetailList = transactionFlowPathOutboundBL.process(tFPRequestData);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(tFPServiceDetailList);
     }
+    
+    @ApiOperation(value = "Retrieve Category event list", response = CategoryEvents.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/services/{serviceId}/categories/anomalies", method = RequestMethod.GET)
+    public ResponseEntity<List<CategoryEvents>> getCategoryEventList(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    		@PathVariable("serviceId") String serviceId,
+    		@RequestParam("load") String load,
+    		@RequestParam(value ="toTime",required =true) String toTime,
+    		@RequestParam(value = "fromTime",required =true) String fromTime)
+            throws ClientException, DataProcessingException, ServerException {
+    	  UtilityBean<Map> utilityBean = applicationSDMCategoryEventServiceBL.clientValidation(null, authorizationToken, identifier, load, serviceId,fromTime,toTime);
+    	  ApplicationSDMRequestBean accADMreqBean = applicationSDMCategoryEventServiceBL.serverValidation(utilityBean);
+          List<CategoryEvents> categoryEventsList = applicationSDMCategoryEventServiceBL.process(accADMreqBean);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(categoryEventsList);
+    }
+    
     
 }
