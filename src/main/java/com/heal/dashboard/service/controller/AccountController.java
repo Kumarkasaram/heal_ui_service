@@ -1,3 +1,4 @@
+
 package com.heal.dashboard.service.controller;
 
 
@@ -181,5 +182,23 @@ public class AccountController {
         Set<ApplicationDetails> applicationList = serviceApplicationBL.process(utilityBean);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(applicationList);
     }
+  
+    @ApiOperation(value = "Retrieve Category event list", response = CategoryEvents.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/services/{serviceId}/categories/anomalies", method = RequestMethod.GET)
+    public ResponseEntity<List<CategoryEvents>> getCategoryEventList(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier,
+    		@PathVariable("serviceId") String serviceId,
+    		@RequestParam("load") String load,
+    		@RequestParam(value ="toTime",required =true) String toTime,
+    		@RequestParam(value = "fromTime",required =true) String fromTime)
+            throws ClientException, DataProcessingException, ServerException {
+    	  UtilityBean<Map> utilityBean = applicationSDMCategoryEventServiceBL.clientValidation(null, authorizationToken, identifier, load, serviceId,fromTime,toTime);
+    	  ApplicationSDMRequestBean accADMreqBean = applicationSDMCategoryEventServiceBL.serverValidation(utilityBean);
+          List<CategoryEvents> categoryEventsList = applicationSDMCategoryEventServiceBL.process(accADMreqBean);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(categoryEventsList);
+    }
     
 }
+
