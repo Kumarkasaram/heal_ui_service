@@ -59,7 +59,14 @@ public class Constants {
     public static final String CASSANDRA_ALL_IDENTIFIER = "ALL";
     public static final String TRANSACTION_TYPE_DEFAULT = "DC";
     public static final String HOST = "Host";
+    public static final String INVOKED_METHOD = "Invoked method : ";
+    public static final String SEPARATOR = "#%&%#";
 
+
+    public static final String COMPONENT_KEY = "component";
+    public static final String COMPONENT_TYPE_KEY = "type";
+    public static final String COMPONENT_VERSION_KEY = "version";
+    public static final String COMPONENT_ID_KEY = "Component Id";
 
 }
 

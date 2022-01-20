@@ -45,6 +45,7 @@ public class TagsDao {
         }
     }
 
+
     public List<TagMapping> getTagMappingDetailsByTagKey(String tagKey, String objectRefTable, int accountId) {
         try {
             String query = "select id, tag_id, object_id, object_ref_table, tag_key, tag_value from tag_mapping " +
@@ -80,5 +81,18 @@ public class TagsDao {
             throw new UiServiceException("Error while fetching tag mapping information needed for DashboardUId");
         }
         return Collections.emptyList();
+    }
+
+
+    public List<TagDetails> getTagDetailsByAccountId(int accountId) {
+        try {
+            String query = "select id, name, tag_type_id, is_predefined, ref_table, created_time, updated_time, " +
+                    "account_id, user_details_id, ref_where_column_name, ref_select_column_name from tag_details where account_id = ?";
+            return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(TagDetails.class),accountId);
+        } catch (Exception e) {
+            log.error("Error while fetching tag_details information for tag name [{}] and accountId [{}]. Details: ", accountId, e);
+            return null;
+
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.heal.dashboard.service.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.heal.dashboard.service.beans.*;
 import com.heal.dashboard.service.businesslogic.*;
 import com.heal.dashboard.service.pojo.ApplicationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.heal.dashboard.service.beans.AccountBean;
-import com.heal.dashboard.service.beans.DateComponentBean;
-import com.heal.dashboard.service.beans.MasterFeaturesBean;
-import com.heal.dashboard.service.beans.TFPRequestData;
-import com.heal.dashboard.service.beans.TagMapping;
-import com.heal.dashboard.service.beans.TopologyDetails;
-import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
-import com.heal.dashboard.service.beans.UserAccessAccountsBean;
-import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
@@ -43,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Api(value = "Accounts")
 public class AccountController {
-
     @Autowired
     JsonFileParser headersParser;
     @Autowired
@@ -58,6 +50,8 @@ public class AccountController {
     MasterFeaturesBL masterFeaturesBL;
     @Autowired
     TransactionFlowPathInboundBL transactionFlowPathInboundBL;
+    @Autowired
+    ClusterKpiMappingServiceBL clusterKpiMappingServiceBL;
     
     @Autowired
     TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
@@ -180,6 +174,22 @@ public class AccountController {
         utilityBean = serviceApplicationBL.serverValidation(utilityBean);
         Set<ApplicationDetails> applicationList = serviceApplicationBL.process(utilityBean);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(applicationList);
+    }
+
+    @ApiOperation(value = "Retrieve attribule detail", response = HashMap.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/instances/{instanceId}/attributes", method = RequestMethod.GET)
+    public ResponseEntity<Map<String,String>> getAttribute(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @PathVariable("identifier") String identifier,
+            @PathVariable("instanceId") String instanceId)
+            throws ClientException, ServerException, DataProcessingException {
+        UtilityBean<Map<String, Object>> utilityBean = clusterKpiMappingServiceBL.clientValidation(null, authorizationToken, identifier,instanceId);
+        UtilityBean<Map<String, Object>>  serverValidation = clusterKpiMappingServiceBL.serverValidation(utilityBean);
+        Map<String,String> result  = clusterKpiMappingServiceBL.process(serverValidation);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(result);
     }
     
 }
