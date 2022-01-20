@@ -1,4 +1,3 @@
-
 package com.heal.dashboard.service.controller;
 
 
@@ -198,6 +197,22 @@ public class AccountController {
     	  ApplicationSDMRequestBean accADMreqBean = applicationSDMCategoryEventServiceBL.serverValidation(utilityBean);
           List<CategoryEvents> categoryEventsList = applicationSDMCategoryEventServiceBL.process(accADMreqBean);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(categoryEventsList);
+    }
+  
+     @ApiOperation(value = "Retrieve attribule detail", response = HashMap.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 400, message = "Invalid Request")})
+    @RequestMapping(value = "/accounts/{identifier}/instances/{instanceId}/attributes", method = RequestMethod.GET)
+    public ResponseEntity<Map<String,String>> getAttribute(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @PathVariable("identifier") String identifier,
+            @PathVariable("instanceId") String instanceId)
+            throws ClientException, ServerException, DataProcessingException {
+        UtilityBean<Map<String, Object>> utilityBean = clusterKpiMappingServiceBL.clientValidation(null, authorizationToken, identifier,instanceId);
+        UtilityBean<Map<String, Object>>  serverValidation = clusterKpiMappingServiceBL.serverValidation(utilityBean);
+        Map<String,String> result  = clusterKpiMappingServiceBL.process(serverValidation);
+        return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(result);
     }
     
 }
