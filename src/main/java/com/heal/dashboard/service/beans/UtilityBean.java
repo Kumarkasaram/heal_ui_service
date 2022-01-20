@@ -10,4 +10,5 @@ public class UtilityBean<T> {
     T pojoObject;
     String accountIdentifier;
     String authToken;
+    String serviceId;
 }
