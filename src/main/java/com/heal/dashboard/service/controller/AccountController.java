@@ -1,6 +1,7 @@
 package com.heal.dashboard.service.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.heal.dashboard.service.beans.AccountBean;
+import com.heal.dashboard.service.beans.ApplicationSDMRequestBean;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
+import com.heal.dashboard.service.beans.SignalData;
+import com.heal.dashboard.service.beans.SignalRequestPojo;
 import com.heal.dashboard.service.beans.TFPRequestData;
 import com.heal.dashboard.service.beans.TagMapping;
 import com.heal.dashboard.service.beans.TopologyDetails;
@@ -61,6 +65,12 @@ public class AccountController {
     
     @Autowired
     TransactionFlowPathOutboundBL transactionFlowPathOutboundBL;
+    @Autowired
+    ClusterKpiMappingServiceBL clusterKpiMappingServiceBL;
+    @Autowired
+    ApplicationSDMCategoryEventServiceBL applicationSDMCategoryEventServiceBL;
+    @Autowired
+    SignalDataServiceBL signalDataServiceBL;
 
     @Autowired
     ServiceApplicationBL serviceApplicationBL;
@@ -213,7 +223,87 @@ public class AccountController {
         UtilityBean<Map<String, Object>>  serverValidation = clusterKpiMappingServiceBL.serverValidation(utilityBean);
         Map<String,String> result  = clusterKpiMappingServiceBL.process(serverValidation);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(result);
+ 
+        
     }
+     
+     @ApiOperation(value = "Retrieve  SignalData list", response = SignalData.class)
+     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved data"),
+             @ApiResponse(code = 500, message = "Internal Server Error"),
+             @ApiResponse(code = 400, message = "Invalid Request")})
+     @RequestMapping(value = "/accounts/{identifier}/signals", method = RequestMethod.GET)
+     public ResponseEntity<Set<SignalData>> getSignalList(@RequestHeader(value = "Authorization") String authorizationToken,@PathVariable("identifier") String identifier
+     		,@RequestParam(value = "status",required = false) String status,@RequestParam(value = "fromTime",required = false) String fromTime,
+     		@RequestParam(value = "toTime",required = false) String toTime)
+             throws ClientException, DataProcessingException, ServerException {
+     	
+     	Map<String,String> queryParam = new HashMap<String,String>();
+     	queryParam.put("signalId", null);
+		queryParam.put("serviceId", null);
+     	queryParam.put("status", status);
+     	queryParam.put("toTime", toTime);
+     	queryParam.put("fromTime", fromTime);
+
+         UtilityBean<SignalRequestPojo> utilityBean = signalDataServiceBL.clientValidation(queryParam, authorizationToken, identifier);
+         utilityBean = signalDataServiceBL.serverValidation(utilityBean);
+         Set<SignalData> signalList = signalDataServiceBL.process(utilityBean);
+         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(signalList);
+     }
+     
+		@ApiOperation(value = "Retrieve  signal list", response = SignalData.class)
+		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved data"),
+				@ApiResponse(code = 500, message = "Internal Server Error"),
+				@ApiResponse(code = 400, message = "Invalid Request") })
+		@RequestMapping(value = "/accounts/{identifier}/services/{serviceId}/signals", method = RequestMethod.GET)
+		public ResponseEntity<Set<SignalData>> getSignalListBySeviceId(
+				@RequestHeader(value = "Authorization") String authorizationToken,
+				@PathVariable("identifier") String identifier, @PathVariable("serviceId") String serviceId,
+				@RequestParam(value = "status", required = false) String status,
+				@RequestParam(value = "fromTime", required = false) String fromTime,
+				@RequestParam(value = "toTime", required = false) String toTime)
+				throws ClientException, DataProcessingException, ServerException {
+
+			Map<String,String> queryParam = new HashMap<>();
+			queryParam.put("signalId", null);
+			queryParam.put("serviceId", serviceId);
+			queryParam.put("status", status);
+			queryParam.put("toTime", toTime);
+			queryParam.put("fromTime", fromTime);
+
+			UtilityBean<SignalRequestPojo> utilityBean = signalDataServiceBL.clientValidation(queryParam,
+					authorizationToken, identifier);
+			utilityBean = signalDataServiceBL.serverValidation(utilityBean);
+			Set<SignalData> signalList = signalDataServiceBL.process(utilityBean);
+			return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(signalList);
+		}
+
+		@ApiOperation(value = "Retrieve  signal list", response = SignalData.class)
+		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved data"),
+				@ApiResponse(code = 500, message = "Internal Server Error"),
+				@ApiResponse(code = 400, message = "Invalid Request") })
+		@RequestMapping(value = "/accounts/{identifier}/signals/{signalId}", method = RequestMethod.GET)
+		public ResponseEntity<Set<SignalData>> getSignalListBySignalId(
+				@RequestHeader(value = "Authorization") String authorizationToken,
+				@PathVariable("identifier") String identifier, @PathVariable("signalId") String signalId,
+				@RequestParam(value = "status", required = false) String status,
+				@RequestParam(value = "fromTime", required = false) String fromTime,
+				@RequestParam(value = "toTime", required = false) String toTime)
+				throws ClientException, DataProcessingException, ServerException {
+
+			Map<String,String> queryParam = new HashMap<String,String>();
+			queryParam.put("signalId", signalId);
+			queryParam.put("serviceId", null);
+			queryParam.put("status", status);
+			queryParam.put("toTime", toTime);
+			queryParam.put("fromTime", fromTime);
+
+			UtilityBean<SignalRequestPojo> utilityBean = signalDataServiceBL.clientValidation(queryParam,
+					authorizationToken, identifier);
+			utilityBean = signalDataServiceBL.serverValidation(utilityBean);
+			Set<SignalData> signalList = signalDataServiceBL.process(utilityBean);
+			return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(signalList);
+		}
+     
     
 }
 
