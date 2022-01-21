@@ -67,6 +67,15 @@ public class Constants {
     public static final String COMPONENT_TYPE_KEY = "type";
     public static final String COMPONENT_VERSION_KEY = "version";
     public static final String COMPONENT_ID_KEY = "Component Id";
-
+    public static final String LITERAL_CURRENT_STATUS = "current_status";
+    
+    public static final String SIGNAL_PROBLEM_DESCRIPTION = "signal.problem.description";
+    public static final String SIGNAL_PROBLEM_DESCRIPTION_DEFAULT = "Transactions at <entry_service_name> have been affected.";
+    public static final String SIGNAL_WARNING_DESCRIPTION = "signal.warning.description";
+    public static final String SIGNAL_WARNING_DESCRIPTION_DEFAULT = "Event(s) in <root_cause_service_list> root cause service(s) may impact transaction performance.";
+    public static final String SIGNAL_INFO_DESCRIPTION = "signal.info.description";
+    public static final String SIGNAL_INFO_DESCRIPTION_DEFAULT = "Info events generated for <affected_service_list>.";
+    public static final String SIGNAL_BATCH_PROCESS_DESCRIPTION = "signal.batch.description";
+    public static final String SIGNAL_BATCH_PROCESS_DESCRIPTION_DEFAULT = "Batch Job <job_id>, Event detected: <kpi>, Current Status: <current_batch_status>";
 }
 

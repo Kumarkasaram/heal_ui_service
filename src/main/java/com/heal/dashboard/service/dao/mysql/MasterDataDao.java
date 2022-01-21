@@ -4,15 +4,16 @@ package com.heal.dashboard.service.dao.mysql;
 
 import java.util.Collections;
 import java.util.List;
-
-import com.heal.dashboard.service.beans.FileSummaryDetailsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.heal.dashboard.service.beans.CategoryDetailBean;
 import com.heal.dashboard.service.beans.ConnectionDetails;
+import com.heal.dashboard.service.beans.FileSummaryDetailsBean;
+import com.heal.dashboard.service.beans.MasterKPIDetailsBean;
 import com.heal.dashboard.service.beans.ViewTypeBean;
 import com.heal.dashboard.service.exception.ServerException;
 
@@ -76,6 +77,43 @@ public class MasterDataDao {
 			return null;
 		}
 	}
+	
+	public CategoryDetailBean getCategoryDetailsForCategory(String  identifier) {
+		String query = "select id categoryId, name name, identifier identifier from mst_category_details where identifier = ?";
+
+		try {
+			return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(CategoryDetailBean.class),identifier);
+		} catch (Exception e) {
+			log.warn("file_processed_id  Unavailable for accountId [{}]", identifier);
+			return null;
+		}
+	}
+	public ViewTypeBean getMstSubTypeForSubTypeId(int subTypeId) {
+		String query = "select type, typeid, name ,subtypeid from view_types where subtypeid=?";
+
+		try {
+			return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(ViewTypeBean.class), subTypeId);
+		} catch (Exception e) {
+			log.warn("ViewTypes Unavailable for subTypeId [{}]", subTypeId);
+			return null;
+		}
+	}
+	
+	public MasterKPIDetailsBean getMasterKPIDetailsData(int kpiId,int defaultAccId,int accountId) {
+		String query = "select id,name,description,data_type  dataType,is_custom  isCustom,status,kpi_type_id  kpiTypeId,measure_units  measureUnits," +
+	            "cluster_operation  clusterOperation,created_time  createdTime,updated_time  updatedTime,user_details_id  userDetailsId," +
+	            "account_id  accountId,kpi_group_id  kpiGroupId,identifier  identifier,value_type  valueType from mst_kpi_details " +
+	            "where id = ? and (account_id = ? or account_id = ?";
+
+		try {
+			return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(MasterKPIDetailsBean.class), kpiId,defaultAccId,accountId);
+		} catch (Exception e) {
+			log.warn("MasterKPIDetailsBean Unavailable for kpiId [{}]", kpiId);
+			return null;
+		}
+	}
+	
+
 
 }
 
