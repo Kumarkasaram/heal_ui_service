@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.heal.dashboard.service.businesslogic.*;
-import com.heal.dashboard.service.pojo.ApplicationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.heal.dashboard.service.beans.AccountBean;
 import com.heal.dashboard.service.beans.ApplicationSDMRequestBean;
+import com.heal.dashboard.service.beans.CategoryEvents;
 import com.heal.dashboard.service.beans.DateComponentBean;
 import com.heal.dashboard.service.beans.MasterFeaturesBean;
 import com.heal.dashboard.service.beans.SignalData;
@@ -31,9 +30,21 @@ import com.heal.dashboard.service.beans.TopologyValidationResponseBean;
 import com.heal.dashboard.service.beans.UserAccessAccountsBean;
 import com.heal.dashboard.service.beans.UtilityBean;
 import com.heal.dashboard.service.beans.tpf.TFPServiceDetails;
+import com.heal.dashboard.service.businesslogic.ApplicationSDMCategoryEventServiceBL;
+import com.heal.dashboard.service.businesslogic.ClusterKpiMappingServiceBL;
+import com.heal.dashboard.service.businesslogic.DateComponentBL;
+import com.heal.dashboard.service.businesslogic.GetAccountsBL;
+import com.heal.dashboard.service.businesslogic.MasterFeaturesBL;
+import com.heal.dashboard.service.businesslogic.ServiceApplicationBL;
+import com.heal.dashboard.service.businesslogic.SignalDataServiceBL;
+import com.heal.dashboard.service.businesslogic.TopologyServiceBL;
+import com.heal.dashboard.service.businesslogic.TransactionFlowPathInboundBL;
+import com.heal.dashboard.service.businesslogic.TransactionFlowPathOutboundBL;
+import com.heal.dashboard.service.businesslogic.UserPreferencesBL;
 import com.heal.dashboard.service.exception.ClientException;
 import com.heal.dashboard.service.exception.DataProcessingException;
 import com.heal.dashboard.service.exception.ServerException;
+import com.heal.dashboard.service.pojo.ApplicationDetails;
 import com.heal.dashboard.service.pojo.ResponseBean;
 import com.heal.dashboard.service.util.JsonFileParser;
 
@@ -204,7 +215,7 @@ public class AccountController {
     		@RequestParam(value = "fromTime",required =true) String fromTime)
             throws ClientException, DataProcessingException, ServerException {
     	  UtilityBean<Map> utilityBean = applicationSDMCategoryEventServiceBL.clientValidation(null, authorizationToken, identifier, load, serviceId,fromTime,toTime);
-    	  ApplicationSDMRequestBean accADMreqBean = applicationSDMCategoryEventServiceBL.serverValidation(utilityBean);
+    	  List<ApplicationSDMRequestBean> accADMreqBean = applicationSDMCategoryEventServiceBL.serverValidation(utilityBean);
           List<CategoryEvents> categoryEventsList = applicationSDMCategoryEventServiceBL.process(accADMreqBean);
         return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(categoryEventsList);
     }
@@ -303,6 +314,7 @@ public class AccountController {
 			Set<SignalData> signalList = signalDataServiceBL.process(utilityBean);
 			return ResponseEntity.ok().headers(headersParser.loadHeaderConfiguration()).body(signalList);
 		}
+ 
      
     
 }

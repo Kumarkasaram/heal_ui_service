@@ -11,4 +11,7 @@ public class UtilityBean<T> {
     String accountIdentifier;
     String authToken;
     String serviceId;
+	AccountBean accountBean; 
+    
+    
 }
